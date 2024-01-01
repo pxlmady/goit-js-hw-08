@@ -100,9 +100,23 @@ function onGalleryClick(event) {
   }
 
   const largeImageSource = target.dataset.source;
-  console.log('Посилання на велике зображення:', largeImageSource);
+
+  const instance = basicLightbox.create(`
+    <img src="${largeImageSource}" alt="Large Image">
+  `);
+
+  instance.show();
+
+  function onKeyPress(event) {
+    if (event.code === 'Escape') {
+      instance.close();
+      window.removeEventListener('keydown', onKeyPress);
+    }
+  }
+
+  window.addEventListener('keydown', onKeyPress);
 }
 
 galleryContainer.addEventListener('click', onGalleryClick);
 
-createGallery(images)
+createGallery(images);
