@@ -65,7 +65,9 @@ const images = [
 ];
 
 const galleryContainer = document.querySelector('.gallery');
+let currentInstance = null;
 
+// Функція для створення елемента галереї
 function createGalleryItem({ preview, original, description }) {
   const galleryItem = document.createElement('li');
   galleryItem.classList.add('gallery-item');
@@ -86,11 +88,13 @@ function createGalleryItem({ preview, original, description }) {
   return galleryItem;
 }
 
+// Функція для створення галереї
 function createGallery(images) {
   const galleryItems = images.map(createGalleryItem);
   galleryContainer.append(...galleryItems);
 }
 
+// Обробник кліку по галереї
 function onGalleryClick(event) {
   event.preventDefault();
 
@@ -101,26 +105,32 @@ function onGalleryClick(event) {
 
   const largeImageSource = target.dataset.source;
 
-  const instance = basicLightbox.create(`
+  // Створення модального вікна із слухачами подій
+  currentInstance = basicLightbox.create(`
     <img src="${largeImageSource}" alt="Large Image">
   `, {
-    onShow: (instance) => {
+    onShow: () => {
       window.addEventListener('keydown', onKeyPress);
     },
-    onClose: (instance) => {
+    onClose: () => {
       window.removeEventListener('keydown', onKeyPress);
+      currentInstance = null;
     }
   });
 
-  instance.show();
+  // Показ модального вікна
+  currentInstance.show();
 }
 
-galleryContainer.addEventListener('click', onGalleryClick);
-
+// Обробник натискання клавіші Esc
 function onKeyPress(event) {
-  if (event.code === 'Escape') {
-    basicLightbox.close();
+  if (event.code === 'Escape' && currentInstance) {
+    currentInstance.close();
   }
 }
 
+// Додавання слухача подій до контейнера галереї
+galleryContainer.addEventListener('click', onGalleryClick);
+
+// Створення галереї при завантаженні сторінки
 createGallery(images);
