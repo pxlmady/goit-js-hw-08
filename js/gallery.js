@@ -103,20 +103,24 @@ function onGalleryClick(event) {
 
   const instance = basicLightbox.create(`
     <img src="${largeImageSource}" alt="Large Image">
-  `);
-
-  instance.show();
-
-  function onKeyPress(event) {
-    if (event.code === 'Escape') {
-      instance.close();
+  `, {
+    onShow: (instance) => {
+      window.addEventListener('keydown', onKeyPress);
+    },
+    onClose: (instance) => {
       window.removeEventListener('keydown', onKeyPress);
     }
-  }
+  });
 
-  window.addEventListener('keydown', onKeyPress);
+  instance.show();
 }
 
 galleryContainer.addEventListener('click', onGalleryClick);
+
+function onKeyPress(event) {
+  if (event.code === 'Escape') {
+    basicLightbox.close();
+  }
+}
 
 createGallery(images);
